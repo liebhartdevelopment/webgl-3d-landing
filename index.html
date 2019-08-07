@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Cinematic 3D Studios</title>
+    <script src="libs/three.min.js"></script>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      // 3D Code
+
+      // Global variables
+      var num = 30;
+      var objects = [];
+      var raycaster = new THREE.Raycaster();
+      var mouse = new THREE.Vector2();
+      var light, t;
+
+      // Create camera
+      var camera = new THREE.PerspectiveCamera(
+        65,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      camera.position.set(0.0, 0.0, 5);
+
+      // Create a scene
+      var scene = new THREE.Scene();
+
+      // Create Renderer
+      var renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Create a spot light
+      light = new THREE.SpotLight(0xccddff, 0.8);
+      light.position.set(0, 0, 5);
+      scene.add(light);
+
+      // Load a ground texture
+      var texture = new THREE.TextureLoader().load("assets/ground.jpg");
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(12, 12);
+
+      // Create ground material
+      material = new THREE.MeshPhysicalMaterial({
+        map: texture,
+        bumpMap: texture
+      });
+
+      // Create ground mesh
+      var geometry = new THREE.PlaneBufferGeometry(100, 100);
+      var ground = new THREE.Mesh(geometry, material);
+      ground.rotation.z = (Math.PI / 180) * -45;
+      ground.rotation.x = (Math.PI / 180) * -90;
+      ground.position.y = -2.0;
+      scene.add(ground);
+
+      // Load object texture
+      var texture = new THREE.TextureLoader().load(
+        "assets/rock_01_diffusion.jpg"
+      );
+
+      // Create a cube map
+      var envMap = new THREE.CubeTextureLoader()
+        .setPath("assets/")
+        .load(["px.jpg", "nx.jpg", "py.jpg", "ny.jpg", "pz.jpg", "nz.jpg"]);
+
+      // Create Tetrahedron
+      var geometry = new THREE.TetrahedronBufferGeometry(2, 0);
+      var material = new THREE.MeshPhysicalMaterial({
+        map: texture,
+        envMap: envMap,
+        metalness: 1.0,
+        roughness: 0.0
+      });
+      t = new THREE.Mesh(geometry, material);
+      t.rotation.x = (Math.PI / 180) * -10;
+      scene.add(t);
+
+      // Add particles loop
+      for (i = 0; i <= num; i++) {
+        // Create particle mesh
+        var geometry = new THREE.SphereBufferGeometry(0.6, 6, 6);
+        var material = new THREE.MeshPhysicalMaterial({
+          envMap: envMap,
+          metalness: 1.0
+        });
+        var particle = new THREE.Mesh(geometry, material);
+        // Set random position for particles
+        particle.position.set(
+          Math.random() * 100.0 - 50.0,
+          0.0,
+          Math.random() * -10.0
+        );
+        // Calculate the distance as a constant and assign to object
+        var a = new THREE.Vector3(0, 0, 0);
+        var b = particle.position;
+        var d = a.distanceTo(b);
+        particle.distance = d;
+        // Define 2 random but constant angles in radians
+        particle.radians = Math.random() * 360 * (Math.PI / 180); // initial angle
+        particle.radians2 = Math.random() * 360 * (Math.PI / 180); // initial angle
+        // Add object to scene
+        scene.add(particle);
+        // Add to collection
+        objects.push(particle);
+      }
+
+      // Animation function
+      const animate = () => {
+        requestAnimationFrame(animate);
+        t.rotation.y -= 0.005;
+        camera.lookAt(t.position);
+
+        for (i = 0; i <= num; i++) {
+          var o = objects[i];
+          o.rotation.y += 0.01;
+          if (i % 2 == 0) {
+            o.radians += 0.005;
+            o.radians2 += 0.005;
+          } else {
+            o.radians -= 0.005;
+            o.radians2 -= 0.005;
+          }
+          o.position.x = Math.cos(o.radians) * o.distance;
+          o.position.z = Math.sin(o.radians) * o.distance;
+          o.position.y = Math.sin(o.radians2) * o.distance * 0.5;
+        }
+
+        renderer.render(scene, camera);
+      };
+      animate();
+
+      document.addEventListener("mousemove", onDocumentMouseMove, false);
+      function onDocumentMouseMove(event) {
+        event.preventDefault();
+        mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+        mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        var intersects = raycaster.intersectObjects(objects, true);
+        if (intersects.length > 0) {
+          active = intersects[0].object;
+          active.material.color.setHex(Math.random() * 0x9999999);
+        }
+        t.rotation.z = mouse.x * 0.5;
+        t.rotation.x = mouse.y * 0.5;
+      }
+    </script>
+  </body>
+</html>
