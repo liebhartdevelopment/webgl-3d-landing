@@ -1,0 +1,54 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+h1 {
+  color: white;
+  position: absolute;
+  top: 50%;
+  z-index: 100;
+  width: 100%;
+  text-align: center;
+  transform: translate(0, -100%);
+  font-family: "Raleway", sans-serif;
+  font-weight: 100;
+  letter-spacing: 20px;
+  text-transform: uppercase;
+  font-size: 32px;
+}
+
+#videoBacker {
+  background-size: cover;
+  object-fit: cover;
+  z-index: 9;
+  opacity: 0.3;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 100vh;
+  transition: 1s opacity ease-in-out;
+}
+
+.bar-top {
+  background-color: black;
+  height: 100px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 100vw;
+}
+
+.bar-bottom {
+  background-color: black;
+  height: 100px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  width: 100vw;
+}

@@ -6,14 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Cinematic 3D Studios</title>
     <script src="libs/three.min.js"></script>
-    <style>
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-      }
-    </style>
+    <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
     <script>
@@ -68,9 +61,7 @@
       scene.add(ground);
 
       // Load object texture
-      var texture = new THREE.TextureLoader().load(
-        "assets/rock_01_diffusion.jpg"
-      );
+      var texture = new THREE.TextureLoader().load("assets/rock_01_normal.jpg");
 
       // Create a cube map
       var envMap = new THREE.CubeTextureLoader()
@@ -92,10 +83,10 @@
       // Add particles loop
       for (i = 0; i <= num; i++) {
         // Create particle mesh
-        var geometry = new THREE.SphereBufferGeometry(0.6, 6, 6);
+        var geometry = new THREE.SphereBufferGeometry(0.2, 2, 2);
         var material = new THREE.MeshPhysicalMaterial({
           envMap: envMap,
-          metalness: 1.0
+          metalness: 2.0
         });
         var particle = new THREE.Mesh(geometry, material);
         // Set random position for particles
@@ -158,5 +149,11 @@
         t.rotation.x = mouse.y * 0.5;
       }
     </script>
+
+    <h1>Cinematic 3D Studios</h1>
+
+    <video id="videoBacker" loop src="assets/snow.mp4" autoplay muted></video>
+    <div class="bar-top"></div>
+    <div class="bar-bottom"></div>
   </body>
 </html>
